@@ -14,7 +14,7 @@ from engines import train_fn
 parser = argparse.ArgumentParser()
 parser.add_argument("--dataset", type = str), parser.add_argument("--num_classes", type = int)
 parser.add_argument("--multilabel", action = "store_true")
-parser.add_argument("--lightweight", action = "store_true")
+parser.add_argument("--lightweight", action = "store_true"), parser.add_argument("--use_demographic", action = "store_true"), 
 parser.add_argument("--num_gpus", type = int, default = 1)
 args = parser.parse_args()
 config = config(
@@ -43,7 +43,7 @@ loaders = {
     ), 
 }
 model = X3ECG(
-    lightweight = args.lightweight, 
+    lightweight = args.lightweight, use_demographic = args.use_demographic, 
     num_classes = args.num_classes, 
 )
 
