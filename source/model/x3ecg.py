@@ -9,9 +9,9 @@ class X3ECG(nn.Module):
     ):
         super(X3ECG, self).__init__()
         if lightweight:
-            self.name = "LightX3ECGpp"
+            self.name = "LightX3ECG"
         else:
-            self.name = "X3ECGpp"
+            self.name = "X3ECG"
         self.use_demographic = use_demographic
 
         self.backbone_0 = SEResNet18(lightweight)
@@ -26,6 +26,7 @@ class X3ECG(nn.Module):
         )
 
         if self.use_demographic:
+            self.name += "pp"
             self.mlp = nn.Sequential(
                 nn.Linear(11, base_channels*2), 
                 nn.BatchNorm1d(base_channels*2), 
