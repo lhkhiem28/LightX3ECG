@@ -53,7 +53,7 @@ optimizer = optim.Adam(
 )
 scheduler = optim.lr_scheduler.CosineAnnealingLR(
     optimizer, 
-    eta_min = 0.1*1e-3, T_max = 50, 
+    eta_min = 0.1*1e-3, T_max = 40, 
 )
 save_ckp_path = "../ckps/{}/{}".format(args.dataset, model.name)
 if not os.path.exists(save_ckp_path):
@@ -61,7 +61,7 @@ if not os.path.exists(save_ckp_path):
 train_fn(
     config, 
     loaders, model, 
-    num_epochs = 80, 
+    num_epochs = 70, 
     optimizer = optimizer, 
     scheduler = scheduler, 
     save_ckp_path = save_ckp_path, training_verbose = True, 
