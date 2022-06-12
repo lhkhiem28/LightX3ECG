@@ -5,7 +5,7 @@ import glob, tqdm
 import random
 import pandas, numpy as np
 import scipy.stats as stats
-import matplotlib.pyplot as pyplot
+import seaborn, matplotlib.pyplot as pyplot
 import torch, torch.nn as nn, torch.optim as optim
 import torch.nn.functional as F
 import torch.nn.utils.prune as prune
@@ -14,7 +14,8 @@ import captum.attr as attr
 import dagshub
 import onnx, onnxruntime
 import fastapi, uvicorn
-from backend.preprocessing import fix_length
+import neurokit2 as nk
+from backend.preprocessing import fix_length, denoise
 from backend.encoding import *
 from backend.normalizers import *
 from backend.blocks import *
