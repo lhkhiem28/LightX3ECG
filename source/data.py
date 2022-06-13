@@ -31,7 +31,7 @@ class ECGDataset(torch.utils.data.Dataset):
         ecg, demographic = torch.tensor(ecg).float(), torch.tensor(demographic).float()
 
         if not self.config.is_multilabel:
-            label = row["merged_label"]
+            label = row["label"]
             return (ecg, demographic), label
         else:
             label = row[[column for column in list(row.index) if "label_" in column]].values.astype("float64")
