@@ -42,10 +42,12 @@ loaders = {
         , shuffle = False
     ), 
 }
-model = X3ECG(
-    lightweight = args.lightweight, use_demographic = args.use_demographic, 
-    num_classes = args.num_classes, 
-)
+# model = X3ECG(
+#     lightweight = args.lightweight, use_demographic = args.use_demographic, 
+#     num_classes = args.num_classes, 
+# )
+model = torch.load("../ckps/pretraining/Lobachevsky/X3ECG/best.ptl", map_location = "cuda")
+model.classifier = nn.Linear(512, args.num_classes)
 
 optimizer = optim.Adam(
     model.parameters(), 

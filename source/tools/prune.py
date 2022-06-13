@@ -42,7 +42,7 @@ loaders = {
         , shuffle = False
     ), 
 }
-model = torch.load("../ckps/{}/LightX3ECGpp/best.ptl".format(args.dataset), map_location = "cuda")
+model = torch.load("../ckps/{}/LightX3ECG/best.ptl".format(args.dataset), map_location = "cuda")
 prune.global_unstructured(
     get_pruned_parameters(model), 
     pruning_method = prune.L1Unstructured, amount = 0.8, 

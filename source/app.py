@@ -10,10 +10,10 @@ args = parser.parse_args()
 from apis.predict import Predictor
 predictor = Predictor(args.ckp_path)
 
-app = fastapi.FastAPI(title = "LightX3ECGpp")
+app = fastapi.FastAPI(title = "LightX3ECG")
 @app.get("/")
 async def home():
-    return "LightX3ECGpp"
+    return "LightX3ECG"
 
 @app.get("/predict")
 async def get_pred(ecg_file):
