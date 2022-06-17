@@ -40,13 +40,18 @@ class SEResNet18(nn.Module):
 
         self.global_pooling = nn.AdaptiveAvgPool1d(1)
 
-    def forward(self, input):
-        output = self.stem(input)
-        output = self.stage_0(output)
+    def forward(self, input, return_feature_list = False):
+        feature_list = []
 
-        output = self.stage_1(output)
-        output = self.stage_2(output)
-        output = self.stage_3(output)
+        output = self.stem(input)
+        output = self.stage_0(output); feature_list.append(output)
+
+        output = self.stage_1(output); feature_list.append(output)
+        output = self.stage_2(output); feature_list.append(output)
+        output = self.stage_3(output); feature_list.append(output)
 
         output = self.global_pooling(output)
-        return output
+        if not return_feature_list:
+            return output
+        else:
+            return output, feature_list

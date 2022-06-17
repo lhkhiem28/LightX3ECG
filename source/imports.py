@@ -15,7 +15,7 @@ import dagshub
 import onnx, onnxruntime
 import fastapi, uvicorn
 import neurokit2 as nk
-from backend.preprocessing import fix_length, denoise
+from backend.preprocessing import fix_length
 from backend.encoding import *
 from backend.normalizers import *
 from backend.blocks import *
