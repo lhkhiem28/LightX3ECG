@@ -43,7 +43,7 @@ class SEResNet18(nn.Module):
     def forward(self, input, return_feature_list = False):
         feature_list = []
 
-        output = self.stem(input)
+        output = self.stem(input); feature_list.append(output)
         output = self.stage_0(output); feature_list.append(output)
 
         output = self.stage_1(output); feature_list.append(output)

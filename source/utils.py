@@ -8,7 +8,7 @@ class config():
             0, 1, 
             6
         ]
-        self.ecg_length = 5000
+        self.ecg_length = 5024
 
         self.is_multilabel = is_multilabel
         self.device_ids = list(range(num_gpus))
