@@ -52,7 +52,7 @@ if not os.path.exists(save_ckp_path):
 train_fn(
     config, 
     loaders, model, 
-    num_epochs = 1, 
+    num_epochs = 40, 
     optimizer = optimizer, 
     scheduler = None, 
     save_ckp_path = save_ckp_path, training_verbose = True, 
