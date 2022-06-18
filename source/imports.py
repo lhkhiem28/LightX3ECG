@@ -21,4 +21,4 @@ from backend.normalizers import *
 from backend.blocks import *
 from backend.infos import get_number_parameters
 from backend.compressing import *
-from backend.metrics import f1_score, classification_report
+from backend.metrics import *

@@ -4,7 +4,7 @@ from .cnn import *
 
 class USEResNet18(nn.Module):
     def __init__(self, 
-        lightweight, 
+        lightweight
     ):
         super(USEResNet18, self).__init__()
         if lightweight:

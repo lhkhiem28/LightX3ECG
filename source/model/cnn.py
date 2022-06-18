@@ -4,7 +4,7 @@ from imports import *
 base_channels = 64
 class SEResNet18(nn.Module):
     def __init__(self, 
-        lightweight, 
+        lightweight
     ):
         super(SEResNet18, self).__init__()
         if lightweight:
