@@ -48,6 +48,10 @@ model = X3ECG(
 )
 # model = torch.load("../ckps/pretraining/Lobachevsky/X3ECG/best.ptl", map_location = "cuda")
 # model.classifier = nn.Linear(512, args.num_classes)
+# encoder = torch.load("../ckps/pretraining/Lobachevsky/USEResNet18/best.ptl", map_location = "cuda").encoder
+# model.backbone_0 = encoder
+# model.backbone_1 = encoder
+# model.backbone_2 = encoder
 
 optimizer = optim.Adam(
     model.parameters(), 

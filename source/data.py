@@ -25,7 +25,7 @@ class ECGDataset(torch.utils.data.Dataset):
         row = self.df.iloc[index]
 
         ecg, demographic = np.load("{}/{}.npy".format(self.data_path, row["id"]))[self.config.ecg_leads, :], encode_age(row["age"], augment = False) + encode_sex(row["sex"], augment = False)
-        ecg = fix_length(ecg, self.config.ecg_length)
+        ecg = fix_ecg_length(ecg, self.config.ecg_length)
         if self.augment:
             ecg = self.drop_lead(ecg)
         ecg, demographic = torch.tensor(ecg).float(), torch.tensor(demographic).float()
