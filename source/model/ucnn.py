@@ -1,4 +1,5 @@
 
+import os, sys
 from imports import *
 from .cnn import *
 

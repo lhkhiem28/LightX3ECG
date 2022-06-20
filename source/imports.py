@@ -1,4 +1,5 @@
 
+import os, sys
 import warnings
 import argparse
 import glob, tqdm
@@ -14,7 +15,7 @@ import captum.attr as attr
 import dagshub
 import onnx, onnxruntime
 import fastapi, uvicorn
-import neurokit2 as nk
+import heartpy, neurokit2 as nk
 from backend.preprocessing import *
 from backend.encoding import *
 from backend.normalizers import *
