@@ -33,7 +33,7 @@ class ECGDataset(torch.utils.data.Dataset):
 
         if not self.config.is_multilabel:
             label = row["label"]
-            return (ecg, demographic), label
+            return (ecg, demographic), row["r_count"], label
         else:
             label = row[[column for column in list(row.index) if "label_" in column]].values.astype("float64")
-            return (ecg, demographic), label
+            return (ecg, demographic), row["r_count"], label

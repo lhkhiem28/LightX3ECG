@@ -25,6 +25,7 @@ class X3ECG(nn.Module):
             nn.Dropout(0.3), 
             nn.Linear(base_channels*8, 3), 
         )
+        self.regressor = nn.Linear(base_channels*8, 1)
 
         if self.use_demographic:
             self.name += "pp"
@@ -57,6 +58,7 @@ class X3ECG(nn.Module):
             feature_1, 
             feature_2, 
         ], dim = 1)*attention_scores.unsqueeze(-1), dim = 1)
+        sub_output = self.regressor(merged_feature).squeeze(-1)
 
         if self.use_demographic:
             merged_feature = self.last_drop(torch.cat([merged_feature, self.mlp(input[1])], axis = 1))
@@ -65,6 +67,6 @@ class X3ECG(nn.Module):
             merged_feature = self.last_drop(merged_feature)
             output = self.classifier(merged_feature)
         if not return_attention_scores:
-            return output
+            return (output, sub_output)
         else:
-            return output, attention_scores
+            return (output, sub_output), attention_scores

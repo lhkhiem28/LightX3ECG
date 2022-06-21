@@ -28,43 +28,43 @@ def train_fn(
             print("epoch {:2}/{:2}".format(epoch, num_epochs) + "\n" + "-"*16)
 
         model.train()
-        running_loss = 0.0
+        running_loss, running_sub_loss = 0.0, 0.0
         running_labels, running_preds = [], []
-        for (ecgs, demographics), labels in tqdm.tqdm(loaders["train"], disable = not training_verbose):
-            (ecgs, demographics), labels = (ecgs.cuda(), demographics.cuda()), labels.cuda()
+        for (ecgs, demographics), r_counts, labels in tqdm.tqdm(loaders["train"], disable = not training_verbose):
+            (ecgs, demographics), r_counts, labels = (ecgs.cuda(), demographics.cuda()), r_counts.cuda(), labels.cuda()
 
-            logits = model((ecgs, demographics))
-            loss = F.cross_entropy(logits, labels) if not config.is_multilabel else F.binary_cross_entropy_with_logits(logits, labels)
+            logits, sub_logits = model((ecgs, demographics))
+            loss, sub_loss = F.cross_entropy(logits, labels) if not config.is_multilabel else F.binary_cross_entropy_with_logits(logits, labels), F.l1_loss(sub_logits, r_counts)
 
-            loss.backward()
+            (loss + 0.05*sub_loss).backward()
             optimizer.step(), optimizer.zero_grad()
 
-            running_loss += loss.item()*ecgs.size(0)
+            running_loss, running_sub_loss = running_loss + loss.item()*ecgs.size(0), running_sub_loss + sub_loss.item()*ecgs.size(0)
             labels, preds = list(labels.data.cpu().numpy()), list(torch.max(logits, 1)[1].detach().cpu().numpy()) if not config.is_multilabel else list(np.where(torch.sigmoid(logits).detach().cpu().numpy() >= 0.5, 1, 0))
             running_labels.extend(labels), running_preds.extend(preds)
 
         if (scheduler is not None) and (not epoch > scheduler.T_max):
             scheduler.step()
 
-        epoch_loss, epoch_f1 = running_loss/len(loaders["train"].dataset), f1_score(
+        (epoch_loss, epoch_sub_loss), epoch_f1 = (running_loss/len(loaders["train"].dataset), running_sub_loss/len(loaders["train"].dataset)), f1_score(
             running_labels, running_preds
             , average = "macro"
         )
         history["train"]["loss"].append(epoch_loss), history["train"]["f1"].append(epoch_f1)
         if training_verbose:
-            print("{:<5} - loss: {:.4f} - f1: {:.4f}".format(
+            print("{:<5} - loss: {:.4f} + 0.05*{:.4f} - f1: {:.4f}".format(
                 "train", 
-                epoch_loss, epoch_f1
+                *(epoch_loss, epoch_sub_loss), epoch_f1
             ))
 
         with torch.no_grad():
             model.eval()
             running_loss = 0.0
             running_labels, running_preds = [], []
-            for (ecgs, demographics), labels in tqdm.tqdm(loaders["val"], disable = not training_verbose):
-                (ecgs, demographics), labels = (ecgs.cuda(), demographics.cuda()), labels.cuda()
+            for (ecgs, demographics), r_counts, labels in tqdm.tqdm(loaders["val"], disable = not training_verbose):
+                (ecgs, demographics), r_counts, labels = (ecgs.cuda(), demographics.cuda()), r_counts.cuda(), labels.cuda()
 
-                logits = model((ecgs, demographics))
+                logits, sub_logits = model((ecgs, demographics))
                 loss = F.cross_entropy(logits, labels) if not config.is_multilabel else F.binary_cross_entropy_with_logits(logits, labels)
 
                 running_loss += loss.item()*ecgs.size(0)
@@ -93,10 +93,10 @@ def train_fn(
     with torch.no_grad():
         model.eval()
         running_labels, running_preds = [], []
-        for (ecgs, demographics), labels in tqdm.tqdm(loaders["val"], disable = not training_verbose):
-            (ecgs, demographics), labels = (ecgs.cuda(), demographics.cuda()), labels.cuda()
+        for (ecgs, demographics), r_counts, labels in tqdm.tqdm(loaders["val"], disable = not training_verbose):
+            (ecgs, demographics), r_counts, labels = (ecgs.cuda(), demographics.cuda()), r_counts.cuda(), labels.cuda()
 
-            logits = model((ecgs, demographics))
+            logits, sub_logits = model((ecgs, demographics))
             loss = F.cross_entropy(logits, labels) if not config.is_multilabel else F.binary_cross_entropy_with_logits(logits, labels)
 
             labels, preds = list(labels.data.cpu().numpy()), list(torch.max(logits, 1)[1].detach().cpu().numpy()) if not config.is_multilabel else list(torch.sigmoid(logits).detach().cpu().numpy())
