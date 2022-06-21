@@ -5,6 +5,7 @@ from imports import *
 def train_fn(
     config, 
     loaders, model, 
+    regressor_lambda, 
     num_epochs, 
     optimizer, 
     scheduler = None, 
@@ -36,7 +37,7 @@ def train_fn(
             logits, sub_logits = model((ecgs, demographics))
             loss, sub_loss = F.cross_entropy(logits, labels) if not config.is_multilabel else F.binary_cross_entropy_with_logits(logits, labels), F.l1_loss(sub_logits, r_counts)
 
-            (loss + 0.05*sub_loss).backward()
+            (loss + regressor_lambda*sub_loss).backward()
             optimizer.step(), optimizer.zero_grad()
 
             running_loss, running_sub_loss = running_loss + loss.item()*ecgs.size(0), running_sub_loss + sub_loss.item()*ecgs.size(0)
@@ -52,7 +53,7 @@ def train_fn(
         )
         history["train"]["loss"].append(epoch_loss), history["train"]["f1"].append(epoch_f1)
         if training_verbose:
-            print("{:<5} - loss: {:.4f} + 0.05*{:.4f} - f1: {:.4f}".format(
+            print("{:<5} - *(loss: {:.4f}, sub_loss: {:.4f}), f1: {:.4f}".format(
                 "train", 
                 *(epoch_loss, epoch_sub_loss), epoch_f1
             ))
@@ -77,7 +78,7 @@ def train_fn(
         )
         history["val"]["loss"].append(epoch_loss), history["val"]["f1"].append(epoch_f1)
         if training_verbose:
-            print("{:<5} - loss: {:.4f} - f1: {:.4f}".format(
+            print("{:<5} - loss: {:.4f}, f1: {:.4f}".format(
                 "val", 
                 epoch_loss, epoch_f1
             ))

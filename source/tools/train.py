@@ -59,16 +59,18 @@ optimizer = optim.Adam(
 )
 scheduler = optim.lr_scheduler.CosineAnnealingLR(
     optimizer, 
-    eta_min = 0.1*1e-3, T_max = 40, 
+    eta_min = 0.1*1e-3, T_max = 50, 
 )
 save_ckp_path = "../ckps/{}/{}".format(args.dataset, model.name)
 if not os.path.exists(save_ckp_path):
     os.makedirs(save_ckp_path)
-train_fn(
-    config, 
-    loaders, model, 
-    num_epochs = 70, 
-    optimizer = optimizer, 
-    scheduler = scheduler, 
-    save_ckp_path = save_ckp_path, training_verbose = True, 
-)
+for regressor_lambda in [round(i, 2) for i in np.arange(1, 11)*0.05]:
+    train_fn(
+        config, 
+        loaders, model, 
+        regressor_lambda = regressor_lambda, 
+        num_epochs = 80, 
+        optimizer = optimizer, 
+        scheduler = scheduler, 
+        save_ckp_path = save_ckp_path, training_verbose = True, 
+    )
