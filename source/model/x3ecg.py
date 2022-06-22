@@ -25,7 +25,10 @@ class X3ECG(nn.Module):
             nn.Dropout(0.3), 
             nn.Linear(base_channels*8, 3), 
         )
-        self.regressor = nn.Linear(base_channels*8, 1)
+        self.regressor = nn.Sequential(
+            nn.Dropout(0.2), 
+            nn.Linear(base_channels*8, 1), 
+        )
 
         if self.use_demographic:
             self.name += "pp"

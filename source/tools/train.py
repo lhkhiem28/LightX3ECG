@@ -42,34 +42,35 @@ loaders = {
         , shuffle = False
     ), 
 }
-model = X3ECG(
-    lightweight = args.lightweight, use_demographic = args.use_demographic, 
-    num_classes = args.num_classes, 
-)
-# model = torch.load("../ckps/pretraining/Lobachevsky/X3ECG/best.ptl", map_location = "cuda")
-# model.classifier = nn.Linear(512, args.num_classes)
-# encoder = torch.load("../ckps/pretraining/Lobachevsky/USEResNet18/best.ptl", map_location = "cuda").encoder
-# model.backbone_0 = encoder
-# model.backbone_1 = encoder
-# model.backbone_2 = encoder
 
-optimizer = optim.Adam(
-    model.parameters(), 
-    lr = 1e-3, weight_decay = 5e-5, 
-)
-scheduler = optim.lr_scheduler.CosineAnnealingLR(
-    optimizer, 
-    eta_min = 0.1*1e-3, T_max = 50, 
-)
-save_ckp_path = "../ckps/{}/{}".format(args.dataset, model.name)
-if not os.path.exists(save_ckp_path):
-    os.makedirs(save_ckp_path)
 for regressor_lambda in [round(i, 2) for i in np.arange(1, 11)*0.05]:
+    model = X3ECG(
+        lightweight = args.lightweight, use_demographic = args.use_demographic, 
+        num_classes = args.num_classes, 
+    )
+    # model = torch.load("../ckps/pretraining/Lobachevsky/X3ECG/best.ptl", map_location = "cuda")
+    # model.classifier = nn.Linear(512, args.num_classes)
+    # encoder = torch.load("../ckps/pretraining/Lobachevsky/USEResNet18/best.ptl", map_location = "cuda").encoder
+    # model.backbone_0 = encoder
+    # model.backbone_1 = encoder
+    # model.backbone_2 = encoder
+
+    optimizer = optim.Adam(
+        model.parameters(), 
+        lr = 1e-3, weight_decay = 5e-5, 
+    )
+    scheduler = optim.lr_scheduler.CosineAnnealingLR(
+        optimizer, 
+        eta_min = 0.1*1e-3, T_max = 50, 
+    )
+    save_ckp_path = "../ckps/{}/{}".format(args.dataset, model.name)
+    if not os.path.exists(save_ckp_path):
+        os.makedirs(save_ckp_path)
     train_fn(
         config, 
         loaders, model, 
         regressor_lambda = regressor_lambda, 
-        num_epochs = 80, 
+        num_epochs = 100, 
         optimizer = optimizer, 
         scheduler = scheduler, 
         save_ckp_path = save_ckp_path, training_verbose = True, 
