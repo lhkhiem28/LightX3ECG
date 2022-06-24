@@ -43,7 +43,7 @@ loaders = {
     ), 
 }
 
-for regressor_lambda in [round(i, 2) for i in np.arange(1, 11)*0.05]:
+for regressor_lambda in [round(i, 2) for i in np.arange(1, 21)*0.01]:
     model = X3ECG(
         lightweight = args.lightweight, use_demographic = args.use_demographic, 
         num_classes = args.num_classes, 
