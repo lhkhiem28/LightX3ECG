@@ -36,16 +36,20 @@ class X3ECG(nn.Module):
                 nn.Linear(11, base_channels*2), 
                 nn.BatchNorm1d(base_channels*2), 
                 nn.ReLU(), 
-                nn.Dropout(0.3), 
+                nn.Dropout(0.2), 
                 nn.Linear(base_channels*2, base_channels*2), 
                 nn.BatchNorm1d(base_channels*2), 
                 nn.ReLU(), 
             )
-            self.last_drop = nn.Dropout(0.3)
-            self.classifier = nn.Linear(base_channels*8 + base_channels*2, num_classes)
+            self.classifier = nn.Sequential(
+                nn.Dropout(0.2), 
+                nn.Linear(base_channels*8 + base_channels*2, num_classes), 
+            )
         else:
-            self.last_drop = nn.Dropout(0.3)
-            self.classifier = nn.Linear(base_channels*8, num_classes)
+            self.classifier = nn.Sequential(
+                nn.Dropout(0.2), 
+                nn.Linear(base_channels*8, num_classes), 
+            )
 
     def forward(self, input, return_attention_scores = False):
         feature_0 = self.backbone_0(input[0][:, 0, :].unsqueeze(1)).squeeze(2)
@@ -64,10 +68,9 @@ class X3ECG(nn.Module):
         sub_output = self.regressor(merged_feature).squeeze(-1)
 
         if self.use_demographic:
-            merged_feature = self.last_drop(torch.cat([merged_feature, self.mlp(input[1])], axis = 1))
+            merged_feature = torch.cat([merged_feature, self.mlp(input[1])], axis = 1)
             output = self.classifier(merged_feature)
         else:
-            merged_feature = self.last_drop(merged_feature)
             output = self.classifier(merged_feature)
         if not return_attention_scores:
             return (output, sub_output)
