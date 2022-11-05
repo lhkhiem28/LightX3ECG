@@ -1,6 +1,7 @@
 
 import os, sys
 from libs import *
+from utils import *
 
 def train_fn(
     train_loaders, 
@@ -34,7 +35,7 @@ def train_fn(
             optimizer.step(), optimizer.zero_grad()
 
             running_loss = running_loss + loss.item()*ecgs.size(0)
-            labels, preds = list(labels.data.cpu().numpy()), list(torch.max(logits, 1)[1].detach().cpu().numpy()) if not config["is_multilabel"] else list(np.where(torch.sigmoid(logits).detach().cpu().numpy() >= 0.5, 1, 0))
+            labels, preds = list(labels.data.cpu().numpy()), list(torch.max(logits, 1)[1].detach().cpu().numpy()) if not config["is_multilabel"] else list(np.where(torch.sigmoid(logits).detach().cpu().numpy() >= 0.50, 1, 0))
             running_labels.extend(labels), running_preds.extend(preds)
 
         if (scheduler is not None) and (not epoch > scheduler.T_max):
@@ -61,7 +62,7 @@ def train_fn(
                 loss = criterion(logits, labels)
 
                 running_loss = running_loss + loss.item()*ecgs.size(0)
-                labels, preds = list(labels.data.cpu().numpy()), list(torch.max(logits, 1)[1].detach().cpu().numpy()) if not config["is_multilabel"] else list(np.where(torch.sigmoid(logits).detach().cpu().numpy() >= 0.5, 1, 0))
+                labels, preds = list(labels.data.cpu().numpy()), list(torch.max(logits, 1)[1].detach().cpu().numpy()) if not config["is_multilabel"] else list(np.where(torch.sigmoid(logits).detach().cpu().numpy() >= 0.50, 1, 0))
                 running_labels.extend(labels), running_preds.extend(preds)
 
         epoch_loss, epoch_f1 = running_loss/len(train_loaders["val"].dataset), f1_score(
@@ -88,14 +89,21 @@ def train_fn(
 
             logits = model(ecgs)
 
-            labels, preds = list(labels.data.cpu().numpy()), list(torch.max(logits, 1)[1].detach().cpu().numpy()) if not config["is_multilabel"] else list(np.where(torch.sigmoid(logits).detach().cpu().numpy() >= 0.5, 1, 0))
+            labels, preds = list(labels.data.cpu().numpy()), list(torch.max(logits, 1)[1].detach().cpu().numpy()) if not config["is_multilabel"] else list(torch.sigmoid(logits).detach().cpu().numpy())
             running_labels.extend(labels), running_preds.extend(preds)
 
-    epoch_loss, epoch_f1 = running_loss/len(train_loaders["val"].dataset), f1_score(
+    if config["is_multilabel"]:
+        running_labels, running_preds = np.array(running_labels), np.array(running_preds)
+
+        optimal_thresholds = thresholds_search(running_labels, running_preds)
+        running_preds = np.stack([
+            np.where(running_preds[:, cls] >= optimal_thresholds[cls], 1, 0) for cls in range(running_preds.shape[1])
+        ]).transpose()
+    val_loss, val_f1 = running_loss/len(train_loaders["val"].dataset), f1_score(
         running_labels, running_preds
         , average = "macro"
     )
     print("{:<5} - loss:{:.4f}, f1:{:.4f}".format(
         "val", 
-        epoch_loss, epoch_f1
+        val_loss, val_f1
     ))
