@@ -36,10 +36,11 @@ class ECGDataset(torch.utils.data.Dataset):
         )
         if self.augment:
             ecg = self.drop_lead(ecg)
+        ecg = torch.tensor(ecg).float()
 
         if not self.config["is_multilabel"]:
             label = row["label"]
         else:
             label = row[[col for col in list(row.index) if "label_" in col]].values.astype("float64")
 
-        return torch.tensor(ecg).float(), label
+        return ecg, label
