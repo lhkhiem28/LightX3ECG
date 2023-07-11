@@ -5,11 +5,12 @@ which is the 1st part of our project on Reduced-lead ECG Classification. Check o
 If you find the paper or the source code useful to your projects, please cite the following BibTeX: 
 <pre>
 @article{LightX3ECG, 
-    author={Le, Khiem H and Pham, Hieu H and Nguyen, Thao BT and Nguyen, Tu A and Thanh, Tien N and Do, Cuong D}, 
-    journal={Biomedical Signal Processing and Control}, 
-    publisher={Elsevier}, 
-    title={Lightx3ecg: A lightweight and explainable deep learning system for 3-lead electrocardiogram classification}, 
-    volume={85}, 
-    pages={104963}, 
+    author      = {Le, Khiem H and Pham, Hieu H and Nguyen, Thao BT and Nguyen, Tu A and Thanh, Tien N and Do, Cuong D}, 
+    title       = {Lightx3ecg: A lightweight and explainable deep learning system for 3-lead electrocardiogram classification}, 
+    journal     = {Biomedical Signal Processing and Control}, 
+    publisher   = {Elsevier}, 
+    volume      = {85}, 
+    pages       = {104963}, 
+    doi         = {10.1016/j.bspc.2023.104963}
 }
 </pre>
